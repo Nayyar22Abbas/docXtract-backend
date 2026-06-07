@@ -1,183 +1,96 @@
-# all user related functions , authentication etc
-
-
-# from fastapi import FastAPI
-from fastapi import APIRouter,Request
-from fastapi.responses import HTMLResponse,RedirectResponse
-from fastapi.templating import Jinja2Templates
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
-from models.authmodel import UserCreate, UserLogin, Token
-from config.db import authconn
-import os
-from authlib.integrations.starlette_client import OAuth
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from routes.v1.contentgeneration import router
+from routes.v1.userauth import authuser
+from routes.v1.protectedroute import protected_router
+from routes.v1.pdf_summary_combined import pdf_summary_combined
+from routes.v1.downloadpdf import pdfdownload
+from routes.v1.chatwithpdf import pdfchat
+from routes.v1.showlistpdf import listpdf
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
-from utilities.utils import hash_password, verify_password, create_access_token
+from routes.v1.deletepdf import deletepdf
+from routes.v1.pdfcomparison import pdfcompare
+from routes.v1.lit_review_builder import lit_review_router
+from routes.v1.quiz import quiz_router
 
-authuser=APIRouter()
-load_dotenv()
+from routes.v2.pdf_chat_model import modelpdfchat
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-# Get backend URL from env, remove trailing slash if present
-BACKEND_URL = os.getenv("NEXT_PUBLIC_API_URL", "http://localhost:8000").rstrip("/")
+from routes.v2.pdf_summary_model import pdfsummarymodel
 
-templates = Jinja2Templates(directory="templates")
-
-
-# google and github login procedure 
-oauth=OAuth()
-oauth.register(
-    name="google",
-    client_id=os.getenv("GOOGLE_CLIENT_ID"),
-    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid email profile"},
-)
+from routes.v2.flashcard import flashcard
+from routes.v2.flashcard_citation import flashcardWithcitation 
 
 
-oauth.register(
-    name="github",
-    client_id=os.getenv("GITHUB_CLIENT_ID"),
-    client_secret=os.getenv("GITHUB_CLIENT_SECRET"),
-    access_token_url="https://github.com/login/oauth/access_token",
-    authorize_url="https://github.com/login/oauth/authorize",
-    api_base_url="https://api.github.com/",
-    client_kwargs={"scope": "user:email"},
-)
+
+from routes.v2.mcqs import mcqs
+from routes.v2.quiz_model import quiz_model_router
+from routes.v2.insight_generation import insight_router
+import os
 
 
 
 
-# remove in future its just for testing the login setup(below code)
-
-@authuser.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
-# -------------------------------
-# Signup Route
-# -------------------------------
-@authuser.post("/signup", summary="Create a new user", tags=["Authentication"])
-def signup(user: UserCreate):
-    """
-    Create a new user.
-
-    **Request body JSON must contain:**
-    - `username`: string
-    - `password`: string
-    """
-    
-    if authconn.find_one({"username": user.username}):
-        raise HTTPException(status_code=400, detail="Username already exists")
-
-    hashed_pw = hash_password(user.password)
-    authconn.insert_one({
-        "username": user.username,
-        "hashed_password": hashed_pw,
-        "provider":"local"
-    })
-    return {"message": "User created successfully"}
-
-# -------------------------------
-# Login Route    Local user 
-# -------------------------------
-@authuser.post("/login", response_model=Token, summary="Login and get JWT", tags=["Authentication"])
-def login(user: UserLogin):
-    db_user = authconn.find_one({"username": user.username})
-
-    if not db_user or not verify_password(user.password, db_user["hashed_password"]):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
-    
-    if db_user.get("provider")!="local":
-        raise HTTPException(
-            status_code=403,
-            detail=f"use{db_user['provider']} Login instead"
-        )
-
-    access_token = create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-# google login
-
-
-# OAuth always sends get request as it redirects the user 
-@authuser.get("/login/google")
-async def login_google(request: Request):
-    return await oauth.google.authorize_redirect(request, redirect_uri=f"{BACKEND_URL}/authuser/auth/google")  #type:ignore
-
-
-
-@authuser.get("/auth/google")
-async def auth_google(request:Request):
-        # google sends code and state which is used by the backend to extract useremail to user as a token and then token is created
-        token=await oauth.google.authorize_access_token(request)  #type:ignore
-        user_info=token.get("userinfo")
-        email=user_info["email"]
-       # in below code the user will be searched such that if usrname contains the valid emaiol received from backend here in data base in place of user name we save email recieved from google 
-        db_user=authconn.find_one({"username":email})
-        if not db_user:
-             authconn.insert_one({
-                  "username":email,
-                  "hashed-password":None,
-                  "provider":"google"
-             })
-
-        access_token=create_access_token(data={"sub":email})
-
-        redirect_url = f"{FRONTEND_URL}/oauth/callback?token={access_token}&provider=google"
-        return RedirectResponse(url=redirect_url)
  
-   
-
-# github OAuth2
-
-@authuser.get("/login/github")
-async def login_github(request:Request):
-     return await oauth.github.authorize_redirect(request, redirect_uri=f"{BACKEND_URL}/authuser/auth/github") #type:ignore
-     
+app= FastAPI()
 
 
+origins=[
+    "http://localhost:3000",  
+    "http://localhost",
+    "http://127.0.0.1:3000",
+    "https://doc-xtract-five.vercel.app",
+    "https://doc-xtract-frontend.vercel.app",
+    "https://doc-xtract-frontend.vercel.app"
+]
 
-@authuser.get("/auth/github")
-async def auth_github(request:Request):
-     token=await oauth.github.authorize_access_token(request)  #type:ignore
-     user= await oauth.github.get("user",token=token)#type:ignore
-     profile=user.json()
-     email=profile.get("email")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],       #allow all HTTP methods
+    allow_headers=["*"]        #allow all headers
+)
 
-
-     if not email:
-          emails_resp= await oauth.github.get("user/emails",token=token)#type:ignore
-          emails=emails_resp.json()
-          email=next((e["email"] for e in emails if e["primary"]),None)
-
-     if not email:
-          raise HTTPException(status_code=400 ,detail="could not retrieve  emaui from Github ")
-     
-     db_user= authconn.find_one({"username":email})
-     if not db_user:
-          authconn.insert_one({
-               "username":email,
-               "hashed_password":None,
-               "provider":"github"
-               
-
-          })
-
-     access_token=create_access_token(data={"sub":email})
-
-     redirect_url = f"{FRONTEND_URL}/oauth/callback?token={access_token}&provider=github"
-     return RedirectResponse(url=redirect_url)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SESSION_SECRET","supersecret")   
 
 
+)
+#version 1 with gemini API
+app.include_router(router,prefix="/users", tags=["Users"])
+app.include_router(authuser,prefix="/authuser",tags=["AuthUser"])
+app.include_router(protected_router,prefix="/protected_route", tags=["protected"])
+app.include_router(pdf_summary_combined,prefix="/summary", tags=["Summary"])
+app.include_router(pdfdownload,prefix="/pdfdownload", tags=["pdf"])
+app.include_router(listpdf,prefix="/list", tags=["pdf"])
+app.include_router(pdfchat,prefix="/pdfchat", tags=["pdf"])
+app.include_router(deletepdf,prefix="/deletepdf", tags=["pdf"])
+app.include_router(pdfcompare,prefix="/ppdfcomparison", tags=["pdf comparison"])
+app.include_router(lit_review_router,prefix="/lit-review", tags=["Literature Review"])
+app.include_router(quiz_router,prefix="/v1/quiz", tags=["Quiz"])
+
+#version 2 with model implementation
+
+app.include_router(modelpdfchat,prefix="/modelpdfchat", tags=["model"])
+
+app.include_router(pdfsummarymodel,prefix="/modelpdfsummary", tags=["model"])
+app.include_router(quiz_model_router,prefix="/v2/quiz", tags=["model"])
+
+
+app.include_router(mcqs,prefix="/mcqgeneration", tags=["model"])
+app.include_router(flashcard,prefix="/flashcard", tags=["model"])
+app.include_router(flashcardWithcitation,prefix="/flashcardwithcitation", tags=["model"])
+app.include_router(insight_router, prefix="/insight/v2", tags=["insight"])
+
+app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
 
 
-# @authuser.get("/dashboard", response_class=HTMLResponse, tags=["Authentication"])
-# async def dashboard(request: Request, token: str = None): #type:ignore
-#     return templates.TemplateResponse(
-#         "dashboard.html",
-#         {"request": request, "token": token}
-#     )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
