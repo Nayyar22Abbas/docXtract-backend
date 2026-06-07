@@ -103,7 +103,8 @@ def login(user: UserLogin):
 # OAuth always sends get request as it redirects the user 
 @authuser.get("/login/google")
 async def login_google(request: Request):
-    return await oauth.google.authorize_redirect(request)  #type:ignore
+    redirect_uri = request.url_for("auth_google")
+    return await oauth.google.authorize_redirect(request, redirect_uri)  #type:ignore
 
 
 
@@ -133,7 +134,8 @@ async def auth_google(request:Request):
 
 @authuser.get("/login/github")
 async def login_github(request:Request):
-     return await oauth.github.authorize_redirect(request) #type:ignore
+     redirect_uri= request.url_for("auth_github")
+     return await oauth.github.authorize_redirect(request,redirect_uri) #type:ignore
      
 
 
