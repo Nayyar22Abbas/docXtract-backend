@@ -125,13 +125,6 @@ async def auth_google(request: Request):
             "hashed_password": None,
             "provider": "google"
         })
-    else:
-        # if user exists but signed up locally, block oauth login
-        if db_user.get("provider") == "local":
-            raise HTTPException(
-                status_code=403,
-                detail="This email is registered with a password. Please log in normally."
-            )
 
     access_token = create_access_token(data={"sub": email})
     redirect_url = f"{FRONTEND_URL}/oauth/callback?token={access_token}&provider=google"
@@ -174,12 +167,6 @@ async def auth_github(request: Request):
             "hashed_password": None,
             "provider": "github"
         })
-    else:
-        if db_user.get("provider") == "local":
-            raise HTTPException(
-                status_code=403,
-                detail="This email is registered with a password. Please log in normally."
-            )
 
     access_token = create_access_token(data={"sub": email})
     redirect_url = f"{FRONTEND_URL}/oauth/callback?token={access_token}&provider=github"
