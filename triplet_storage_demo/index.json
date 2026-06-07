@@ -1,0 +1,109 @@
+{
+  "documents": {
+    "ml-basics-2024": {
+      "concepts": [
+        "natural language processing",
+        "convolutional networks",
+        "gradient descent",
+        "deep learning",
+        "neural network training",
+        "recurrent networks",
+        "backpropagation",
+        "sequence processing",
+        "image processing",
+        "python",
+        "machine learning",
+        "transformers",
+        "bert",
+        "tensorflow",
+        "neural networks"
+      ],
+      "relations": [
+        "are used for",
+        "is a subset of",
+        "revolutionized",
+        "is built on",
+        "is used for",
+        "is a library for",
+        "are applied in",
+        "is used in"
+      ],
+      "triple_count": 10,
+      "indexed_at": "2026-03-10T20:00:23.182847"
+    }
+  },
+  "concepts": {
+    "natural language processing": [
+      "ml-basics-2024"
+    ],
+    "convolutional networks": [
+      "ml-basics-2024"
+    ],
+    "gradient descent": [
+      "ml-basics-2024"
+    ],
+    "deep learning": [
+      "ml-basics-2024"
+    ],
+    "neural network training": [
+      "ml-basics-2024"
+    ],
+    "recurrent networks": [
+      "ml-basics-2024"
+    ],
+    "backpropagation": [
+      "ml-basics-2024"
+    ],
+    "sequence processing": [
+      "ml-basics-2024"
+    ],
+    "image processing": [
+      "ml-basics-2024"
+    ],
+    "python": [
+      "ml-basics-2024"
+    ],
+    "machine learning": [
+      "ml-basics-2024"
+    ],
+    "transformers": [
+      "ml-basics-2024"
+    ],
+    "bert": [
+      "ml-basics-2024"
+    ],
+    "tensorflow": [
+      "ml-basics-2024"
+    ],
+    "neural networks": [
+      "ml-basics-2024"
+    ]
+  },
+  "relations": {
+    "are used for": [
+      "ml-basics-2024"
+    ],
+    "is a subset of": [
+      "ml-basics-2024"
+    ],
+    "revolutionized": [
+      "ml-basics-2024"
+    ],
+    "is built on": [
+      "ml-basics-2024"
+    ],
+    "is used for": [
+      "ml-basics-2024"
+    ],
+    "is a library for": [
+      "ml-basics-2024"
+    ],
+    "are applied in": [
+      "ml-basics-2024"
+    ],
+    "is used in": [
+      "ml-basics-2024"
+    ]
+  },
+  "created_at": "2026-03-10T20:00:23.181105"
+}

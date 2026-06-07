@@ -1,0 +1,61 @@
+{
+  "doc_id": "ml-basics-2024",
+  "triples": [
+    {
+      "subject": "Python",
+      "predicate": "is used for",
+      "object": "Machine Learning"
+    },
+    {
+      "subject": "Neural Networks",
+      "predicate": "are applied in",
+      "object": "Deep Learning"
+    },
+    {
+      "subject": "Deep Learning",
+      "predicate": "is a subset of",
+      "object": "Machine Learning"
+    },
+    {
+      "subject": "TensorFlow",
+      "predicate": "is a library for",
+      "object": "Deep Learning"
+    },
+    {
+      "subject": "Gradient Descent",
+      "predicate": "is used in",
+      "object": "Neural Network Training"
+    },
+    {
+      "subject": "Backpropagation",
+      "predicate": "is used in",
+      "object": "Neural Network Training"
+    },
+    {
+      "subject": "Convolutional Networks",
+      "predicate": "are used for",
+      "object": "Image Processing"
+    },
+    {
+      "subject": "Recurrent Networks",
+      "predicate": "are used for",
+      "object": "Sequence Processing"
+    },
+    {
+      "subject": "Transformers",
+      "predicate": "revolutionized",
+      "object": "Natural Language Processing"
+    },
+    {
+      "subject": "BERT",
+      "predicate": "is built on",
+      "object": "Transformers"
+    }
+  ],
+  "metadata": {
+    "topic": "Machine Learning Basics",
+    "date": "2024-03"
+  },
+  "saved_at": "2026-03-10T20:00:23.182157",
+  "triple_count": 10
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Welcome 🎉</h2>
+    {% if token %}
+        <p>Your JWT Token:</p>
+        <code>{{ token }}</code>
+    {% else %}
+        <p>No token received.</p>
+    {% endif %}
+</body>
+</html>

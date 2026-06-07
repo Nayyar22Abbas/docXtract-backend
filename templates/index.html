@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iNotes - Take Your Notes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Navbar -->
+  <nav class="bg-gray-800 text-white shadow">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <a href="#" class="text-xl font-bold">iNotes</a>
+      <ul class="flex space-x-6">
+        <li><a href="#" class="hover:text-gray-300">Home</a></li>
+        <li><a href="#" class="hover:text-gray-300">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Add Note Form -->
+  <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-semibold mb-6">Add a New Note</h1>
+    <form action="/notes/add_note" method="post" class="space-y-4">
+      <div>
+        <label for="Title" class="block mb-1 font-medium">Title</label>
+        <input type="text" pattern="[A-Za-z\s]+"  title="Title must contain only letters and spaces"id="Title" name="title" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+      </div>
+      <div>
+        <label for="desc" class="block mb-1 font-medium">Description</label>
+        <input type="text" id="desc" name="desc" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div>
+        <label for="note_text" class="block mb-1 font-medium">Note</label>
+        <input type="text" id="note_text" name="note_text" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+      </div>
+      <div class="flex items-center">
+        <input type="checkbox" id="important" name="important" value="true" class="mr-2">
+        <label for="important" class="text-gray-700">Important</label>
+      </div>
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Add Note</button>
+    </form>
+    {% if message %}
+      <p class="mt-4 text-green-600 font-semibold">{{ message }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Notes List -->
+  <div class="container mx-auto mt-10">
+    <h1 class="text-2xl font-semibold mb-4">Your Notes</h1>
+    <ul class="space-y-4">
+      {% for doc in newDocs %}
+      <li class="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
+        <div>
+          <h2 class="font-bold">{{ doc.title }}</h2>
+          <p>{{ doc.desc }}</p>
+          <p>{{ doc.note }}</p>
+          {% if doc.important == "true" %}
+            <span class="text-red-600 font-semibold">Important</span>
+          {% endif %}
+        </div>
+        <form action="/notes/delete_note/{{ doc.id }}" method="post">
+          <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition">Delete</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</body>
+</html>

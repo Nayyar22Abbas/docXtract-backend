@@ -1,0 +1,96 @@
+﻿python : .Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python tests/test_s
+treaming.py 2>&1 | 
+Out-File -Encoding 
+utf8 test_ou ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+    + CategoryInfo   
+           : 
+NotSpecified: (.Trac 
+   eback (most 
+recent call     
+last)::String) [], 
+Rem    oteException
+    + FullyQualifiedE
+rrorId     : 
+NativeCommandError
+ 
+  File "D:\FYP\DocXtr
+act\Docxtract-fyp-mod
+el\backend\tests\test
+_streaming.py", line 
+79, in test_upload_ro
+ute_structure
+    mock_file.read = 
+asyncio.coroutine(lam
+bda: b"fake content")
+                     
+^^^^^^^^^^^^^^^^^
+AttributeError: 
+module 'asyncio' has 
+no attribute 
+'coroutine'. Did you 
+mean: 'coroutines'?
+E
+=====================
+=====================
+=====================
+=======
+ERROR: test_upload_ro
+ute_structure (__main
+__.TestStreaming.test
+_upload_route_structu
+re)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Program Fi
+les\WindowsApps\Pytho
+nSoftwareFoundation.P
+ython.3.13_3.13.2544.
+0_x64__qbz5n2kfra8p0\
+Lib\unittest\mock.py"
+, line 1426, in 
+patched
+    return 
+func(*newargs, 
+**newkeywargs)
+  File "D:\FYP\DocXtr
+act\Docxtract-fyp-mod
+el\backend\tests\test
+_streaming.py", line 
+79, in test_upload_ro
+ute_structure
+    mock_file.read = 
+asyncio.coroutine(lam
+bda: b"fake content")
+                     
+^^^^^^^^^^^^^^^^^
+AttributeError: 
+module 'asyncio' has 
+no attribute 
+'coroutine'. Did you 
+mean: 'coroutines'?
+
+---------------------
+---------------------
+---------------------
+-------
+Ran 2 tests in 0.005s
+
+FAILED (errors=1)
+Header: ### Extracted Details (Streamed)
+
+
+Chunk 1: **Chunk 1**:
+ - Extracted Detail 1
+
+
+Starting test_upload_route_structure

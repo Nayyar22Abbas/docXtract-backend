@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    container_name: docxtract-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    volumes:
+      - .:/backend
