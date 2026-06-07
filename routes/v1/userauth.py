@@ -18,7 +18,6 @@ authuser=APIRouter()
 load_dotenv()
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-BACKEND_URL = os.getenv("NEXT_PUBLIC_API_URL", "http://localhost:8000")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -31,7 +30,6 @@ oauth.register(
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
-    redirect_uri=f"{BACKEND_URL}/authuser/auth/google"
 )
 
 
@@ -43,7 +41,6 @@ oauth.register(
     authorize_url="https://github.com/login/oauth/authorize",
     api_base_url="https://api.github.com/",
     client_kwargs={"scope": "user:email"},
-    redirect_uri=f"{BACKEND_URL}/authuser/auth/github"
 )
 
 
