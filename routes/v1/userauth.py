@@ -45,6 +45,7 @@ oauth.register(
 # -----------------------------------------------
 # Test Login Page (remove in production)
 # -----------------------------------------------
+
 @authuser.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -62,6 +63,7 @@ def signup(user: UserCreate):
     - `username`: string
     - `password`: string
     """
+    
     if authconn.find_one({"username": user.username}):
         raise HTTPException(status_code=400, detail="Username already exists")
 
@@ -73,9 +75,8 @@ def signup(user: UserCreate):
     })
     return {"message": "User created successfully"}
 
-
 # -----------------------------------------------
-# Local Login Route
+# Login Route    Local user 
 # -----------------------------------------------
 @authuser.post("/login", response_model=Token, summary="Login and get JWT", tags=["Authentication"])
 def login(user: UserLogin):
@@ -101,6 +102,7 @@ def login(user: UserLogin):
 async def login_google(request: Request):
     redirect_uri = f"{BACKEND_URL}/authuser/auth/google"
     return await oauth.google.authorize_redirect(request, redirect_uri)  # type: ignore
+
 
 
 @authuser.get("/auth/google", tags=["Authentication"])
@@ -135,7 +137,7 @@ async def auth_google(request: Request):
     redirect_url = f"{FRONTEND_URL}/oauth/callback?token={access_token}&provider=google"
     return RedirectResponse(url=redirect_url)
 
-
+ 
 # -----------------------------------------------
 # GitHub OAuth
 # -----------------------------------------------
@@ -182,3 +184,14 @@ async def auth_github(request: Request):
     access_token = create_access_token(data={"sub": email})
     redirect_url = f"{FRONTEND_URL}/oauth/callback?token={access_token}&provider=github"
     return RedirectResponse(url=redirect_url)
+
+
+
+
+
+# @authuser.get("/dashboard", response_class=HTMLResponse, tags=["Authentication"])
+# async def dashboard(request: Request, token: str = None): #type:ignore
+#     return templates.TemplateResponse(
+#         "dashboard.html",
+#         {"request": request, "token": token}
+#     )
