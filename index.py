@@ -1,15 +1,20 @@
+from dotenv import load_dotenv
+import os
+
+# Load environment variables FIRST before importing modules that use them
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from routes.v1.contentgeneration import router
-from routes.v1.userauth import authuser
+from routes.v1.userauth import FRONTEND_URL, authuser
 from routes.v1.protectedroute import protected_router
 from routes.v1.pdf_summary_combined import pdf_summary_combined
 from routes.v1.downloadpdf import pdfdownload
 from routes.v1.chatwithpdf import pdfchat
 from routes.v1.showlistpdf import listpdf
 from fastapi.staticfiles import StaticFiles
-from dotenv import load_dotenv
 from routes.v1.deletepdf import deletepdf
 from routes.v1.pdfcomparison import pdfcompare
 from routes.v1.lit_review_builder import lit_review_router
@@ -27,9 +32,6 @@ from routes.v2.flashcard_citation import flashcardWithcitation
 from routes.v2.mcqs import mcqs
 from routes.v2.quiz_model import quiz_model_router
 from routes.v2.insight_generation import insight_router
-import os
-
-
 
 
  
@@ -40,10 +42,10 @@ origins=[
     "http://localhost:3000",  
     "http://localhost",
     "http://127.0.0.1:3000",
-    "https://doc-xtract-frontend.vercel.app/",
+    "https://doc-xtract-five.vercel.app",
     "https://doc-xtract-frontend.vercel.app",
+    "https://doc-xtract-frontend.vercel.app/",
     FRONTEND_URL
-  
 ]
 
 app.add_middleware(
