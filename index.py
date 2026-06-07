@@ -7,6 +7,8 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from routes.v1.contentgeneration import router
 from routes.v1.userauth import FRONTEND_URL, authuser
 from routes.v1.protectedroute import protected_router
@@ -34,9 +36,29 @@ from routes.v2.quiz_model import quiz_model_router
 from routes.v2.insight_generation import insight_router
 
 
+# Middleware to handle Railway proxy headers for OAuth
+class ProxyHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        # Trust X-Forwarded headers from Railway
+        if "x-forwarded-proto" in request.headers:
+            # This ensures request.url and request.url_for use correct scheme/host
+            request.scope["scheme"] = request.headers["x-forwarded-proto"]
+        if "x-forwarded-host" in request.headers:
+            request.scope["server"] = (request.headers["x-forwarded-host"], 443 if request.headers.get("x-forwarded-proto") == "https" else 80)
+        return await call_next(request)
+
  
 app= FastAPI()
 
+# Add proxy headers middleware FIRST (before other middleware)
+app.add_middleware(ProxyHeadersMiddleware)
+
+# Add middleware to handle Railway's proxy headers for OAuth
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"],
+    allowed_original_hosts=["docxtract-backend-production.up.railway.app", "doc-xtract-frontend.vercel.app", "localhost"]
+)
 
 origins=[
     "http://localhost:3000",  
